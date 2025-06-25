@@ -4,7 +4,7 @@
 
 <!-- Hero Section -->
 <section class="hero" id="beranda" <?php if (isset($settings['hero_background_image']) && !empty($settings['hero_background_image']['value'])): ?>
-    style="background-image: linear-gradient(rgba(40, 40, 40, 0.8), rgba(40, 40, 40, 0.8)), url('<?= base_url('assets/images/uploads/' . $settings['hero_background_image']['value']) ?>');"
+        style="background-image: linear-gradient(rgba(40, 40, 40, 0.8), rgba(40, 40, 40, 0.8)), url('<?= base_url('assets/images/uploads/' . $settings['hero_background_image']['value']) ?>');"
     <?php endif; ?>>
     <div class="container">
         <div class="hero-content">
@@ -27,11 +27,13 @@
                 <h3>Visi & Misi Perusahaan</h3>
                 <p><strong>Visi:</strong> <?= esc($company_vision) ?></p>
                 <p><strong>Misi:</strong> <?= esc($company_mission) ?></p>
-                <p>Dengan pengalaman bertahun-tahun di industri perdagangan, kami berkomitmen untuk terus berinovasi dan memberikan nilai terbaik bagi seluruh stakeholder.</p>
+                <p>Dengan pengalaman bertahun-tahun di industri perdagangan, kami berkomitmen untuk terus berinovasi dan
+                    memberikan nilai terbaik bagi seluruh stakeholder.</p>
             </div>
             <div class="about-image">
                 <?php if (isset($settings['about_image']) && !empty($settings['about_image']['value'])): ?>
-                    <img src="<?= base_url('assets/images/uploads/' . $settings['about_image']['value']) ?>" alt="About <?= esc($company_name) ?>">
+                    <img src="<?= base_url('assets/images/uploads/' . $settings['about_image']['value']) ?>"
+                        alt="About <?= esc($company_name) ?>">
                 <?php else: ?>
                     <span>Ilustrasi Perusahaan</span>
                 <?php endif; ?>
@@ -49,7 +51,8 @@
         </div>
         <div class="services-grid">
             <?php if (!empty($services)): ?>
-                <?php foreach ($services as $service): ?> <div class="service-card">
+                <?php foreach ($services as $service): ?>
+                    <div class="service-card">
                         <div class="service-icon">
                             <i class="<?= esc($service['icon']) ?>"></i>
                         </div>
@@ -62,7 +65,8 @@
                 <div class="service-card">
                     <div class="service-icon">📊</div>
                     <h3>Konsultasi Bisnis</h3>
-                    <p>Memberikan konsultasi strategis untuk mengoptimalkan kinerja bisnis dan mencapai target yang diinginkan.</p>
+                    <p>Memberikan konsultasi strategis untuk mengoptimalkan kinerja bisnis dan mencapai target yang
+                        diinginkan.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🤝</div>
@@ -72,7 +76,8 @@
                 <div class="service-card">
                     <div class="service-icon">🚚</div>
                     <h3>Distribusi & Logistik</h3>
-                    <p>Layanan distribusi dan logistik yang efisien untuk memastikan produk sampai tepat waktu dan kondisi prima.</p>
+                    <p>Layanan distribusi dan logistik yang efisien untuk memastikan produk sampai tepat waktu dan kondisi
+                        prima.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">📈</div>
@@ -97,8 +102,7 @@
                     <div class="portfolio-item">
                         <?php if (!empty($partner['logo'])): ?>
                             <img src="<?= base_url('assets/images/uploads/' . $partner['logo']) ?>"
-                                alt="<?= esc($partner['name']) ?>"
-                                class="partner-logo">
+                                alt="<?= esc($partner['name']) ?>" class="partner-logo">
                         <?php endif; ?>
                         <div class="partner-info">
                             <h4><?= esc($partner['name']) ?></h4>
@@ -193,6 +197,14 @@
                         <label for="pesan">Pesan</label>
                         <textarea id="pesan" name="pesan" rows="5"><?= old('pesan') ?></textarea>
                     </div>
+                    <!--  Tambahan: Form Investasi IDR -->
+                    <div class="form-group">
+                        <label for="investasi_display">Rencana Investasi (dalam Rp)</label>
+                        <input type="text" id="investasi_display" placeholder="Contoh: Rp 1.000.000,00">
+                        <input type="hidden" name="investasi_idr" id="investasi_idr">
+                    </div>
+
+                    <!-- Akhir tambahan -->
                     <button type="button" class="submit-btn" id="submitBtn">Kirim Pesan</button>
                 </form>
             </div>
@@ -227,14 +239,14 @@
 
     // Notification system
     <?php if (session()->getFlashdata('success')): ?>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('Success notification triggered');
             showNotification('success', 'Berhasil!', '<?= addslashes(session()->getFlashdata('success')) ?>');
         });
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('errors')): ?>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('Error notification triggered');
             let errors = <?= json_encode(array_values(session()->getFlashdata('errors'))) ?>;
             let errorMessage = errors.join('<br>');
@@ -243,7 +255,7 @@
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')): ?>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('Single error notification triggered');
             showNotification('error', 'Terjadi Kesalahan!', '<?= addslashes(session()->getFlashdata('error')) ?>');
         });
@@ -298,7 +310,7 @@
             }, 300);
         }
     } // Form validation
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         console.log('DOM loaded, setting up form validation');
 
         const contactForm = document.getElementById('contactForm');
@@ -322,7 +334,7 @@
                 input.removeAttribute('max');
 
                 // Override browser validation
-                input.addEventListener('invalid', function(e) {
+                input.addEventListener('invalid', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
@@ -330,7 +342,7 @@
             });
 
             // Override form submit completely
-            contactForm.onsubmit = function(e) {
+            contactForm.onsubmit = function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -342,7 +354,7 @@
             };
 
             // Also add event listener as backup
-            contactForm.addEventListener('submit', function(e) {
+            contactForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -354,7 +366,7 @@
             }, true); // Use capture phase
 
             // Prevent button click from triggering browser validation
-            submitBtn.addEventListener('click', function(e) {
+            submitBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -461,12 +473,12 @@
 
     // Add marker for company location
     const marker = new mapboxgl.Marker({
-            color: '#D80000'
-        })
+        color: '#D80000'
+    })
         .setLngLat([<?= $contact_info['coordinates']['lng'] ?>, <?= $contact_info['coordinates']['lat'] ?>])
         .setPopup(new mapboxgl.Popup({
-                offset: 25
-            })
+            offset: 25
+        })
             .setHTML('<h3><?= esc($company_name) ?></h3><p>Lokasi Perusahaan</p>'))
         .addTo(map);
 

@@ -54,8 +54,9 @@
                     <th>Tanggal</th>
                     <th>Nama</th>
                     <th>Email</th>
-                    <th>Telepon</th>
+                    <!-- <th>Telepon</th> -->
                     <th>Pesan</th>
+                    <th>Investasi</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -84,7 +85,7 @@
                                     <?= esc($contact['email']) ?>
                                 </a>
                             </td>
-                            <td>
+                            <!-- <td>
                                 <?php if (!empty($contact['telepon'])): ?>
                                     <a href="tel:<?= esc($contact['telepon']) ?>" class="phone-link">
                                         <?= esc($contact['telepon']) ?>
@@ -92,13 +93,22 @@
                                 <?php else: ?>
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>
-                            </td>
+                            </td> -->
                             <td>
                                 <div class="message-preview" title="<?= esc($contact['pesan']) ?>">
-                                    <?= esc(substr($contact['pesan'], 0, 80)) ?><?= strlen($contact['pesan']) > 80 ? '...' : '' ?>
+                                    <?= esc(substr($contact['pesan'], 0, 80)) ?>
+                                    <?= strlen($contact['pesan']) > 80 ? '...' : '' ?>
                                 </div>
                                 <button class="btn-link" onclick="showFullMessage(<?= $contact['id'] ?>)">
                                     <i class="fas fa-expand-alt"></i> Lihat Lengkap
+                                </button>
+                            </td>
+                            <td>
+                                Rp<?= number_format($contact['investasi_idr'], 2, ',', '.') ?><br>
+                                <span id="jpy-<?= $contact['id'] ?>" class="text-muted small">¥...</span><br>
+                                <button class="btn btn-sm btn-outline-primary"
+                                    onclick="convertSingleToJPY(<?= $contact['id'] ?>, <?= $contact['investasi_idr'] ?>)">
+                                    To Yen
                                 </button>
                             </td>
                             <td>
@@ -109,17 +119,17 @@
                             <td>
                                 <div class="action-buttons">
                                     <?php if ($contact['status'] === 'unread'): ?>
-                                        <a href="<?= base_url('admin/mark-read/' . $contact['id']) ?>"
-                                            class="action-btn btn-read" title="Tandai sebagai dibaca">
+                                        <a href="<?= base_url('admin/mark-read/' . $contact['id']) ?>" class="action-btn btn-read"
+                                            title="Tandai sebagai dibaca">
                                             <i class="fas fa-check"></i>
                                         </a>
                                     <?php endif; ?>
-                                    <button class="action-btn btn-reply" onclick="replyToContact(<?= $contact['id'] ?>)" title="Balas">
+                                    <button class="action-btn btn-reply" onclick="replyToContact(<?= $contact['id'] ?>)"
+                                        title="Balas">
                                         <i class="fas fa-reply"></i>
                                     </button>
-                                    <a href="<?= base_url('admin/delete/' . $contact['id']) ?>"
-                                        class="action-btn btn-delete" title="Hapus"
-                                        onclick="return confirm('Yakin ingin menghapus pesan ini?')">
+                                    <a href="<?= base_url('admin/delete/' . $contact['id']) ?>" class="action-btn btn-delete"
+                                        title="Hapus" onclick="return confirm('Yakin ingin menghapus pesan ini?')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -380,25 +390,70 @@
 
 <?= $this->section('js') ?>
 <script>
+    // function showFullMessage(contactId) {
+    //     // Get contact data from PHP (you might want to make an AJAX call here)
+    //     const contact = <?= json_encode($contacts) ?>.find(c => c.id == contactId);
+
+    //     if (contact) {
+    //         document.getElementById('messageModalBody').innerHTML = `
+    //             <div class="contact-detail">
+    //                 <h4>${contact.nama}</h4>
+    //                 <p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p>
+    //                 ${contact.telepon ? `<p><strong>Telepon:</strong> <a href="tel:${contact.telepon}">${contact.telepon}</a></p>` : ''}
+    //                 <p><strong>Tanggal:</strong> ${new Date(contact.created_at).toLocaleString('id-ID')}</p>
+    //                 <hr>
+    //                 <h5>Pesan:</h5>
+    //                 <div class="message-content">${contact.pesan}</div>
+    //             </div>
+    //         `;
+    //         document.getElementById('messageModal').style.display = 'flex';
+    //     }
+    // }
+
+
+    async function convertSingleToJPY(contactId, amountIDR) {
+        try {
+            const response = await fetch(`https://api.exchangerate.host/convert?from=IDR&to=JPY&amount=${amountIDR}&access_key=22d4d67c09ee6844f050bca05cc0d91c`);
+            const data = await response.json();
+
+            if (data.success) {
+                const jpy = data.result;
+                const el = document.getElementById(`jpy-${contactId}`);
+                el.textContent = `≈ ¥ ${jpy.toLocaleString('ja-JP', { minimumFractionDigits: 0 })}`;
+                el.classList.remove('text-muted');
+            } else {
+                showNotification('Gagal konversi: ' + data.error?.info || 'Unknown error', 'error');
+            }
+        } catch (error) {
+            console.error('Gagal mengambil data kurs:', error);
+            showNotification('Terjadi kesalahan saat mengambil kurs.', 'error');
+        }
+    }
+
+
+    // Jalankan saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', convertToJPY);
+
     function showFullMessage(contactId) {
-        // Get contact data from PHP (you might want to make an AJAX call here)
         const contact = <?= json_encode($contacts) ?>.find(c => c.id == contactId);
 
         if (contact) {
             document.getElementById('messageModalBody').innerHTML = `
-                <div class="contact-detail">
-                    <h4>${contact.nama}</h4>
-                    <p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p>
-                    ${contact.telepon ? `<p><strong>Telepon:</strong> <a href="tel:${contact.telepon}">${contact.telepon}</a></p>` : ''}
-                    <p><strong>Tanggal:</strong> ${new Date(contact.created_at).toLocaleString('id-ID')}</p>
-                    <hr>
-                    <h5>Pesan:</h5>
-                    <div class="message-content">${contact.pesan}</div>
-                </div>
-            `;
+            <div class="contact-detail">
+                <h4>${contact.nama}</h4>
+                <p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p>
+                ${contact.telepon ? `<p><strong>Telepon:</strong> <a href="tel:${contact.telepon}">${contact.telepon}</a></p>` : ''}
+                <p><strong>Tanggal:</strong> ${new Date(contact.created_at).toLocaleString('id-ID')}</p>
+                <p><strong>Investasi:</strong> Rp ${parseFloat(contact.investasi_idr).toLocaleString('id-ID', { minimumFractionDigits: 2 })}</p>
+                <hr>
+                <h5>Pesan:</h5>
+                <div class="message-content">${contact.pesan}</div>
+            </div>
+        `;
             document.getElementById('messageModal').style.display = 'flex';
         }
     }
+
 
     function replyToContact(contactId) {
         const contact = <?= json_encode($contacts) ?>.find(c => c.id == contactId);
@@ -477,7 +532,7 @@
     }
 
     // Close modal when clicking outside
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {
             if (event.target === modal) {

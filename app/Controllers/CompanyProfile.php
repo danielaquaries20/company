@@ -82,7 +82,8 @@ class CompanyProfile extends BaseController
         $validation->setRules([
             'nama' => 'required|min_length[3]|max_length[100]',
             'email' => 'required|valid_email',
-            'pesan' => 'required|min_length[10]|max_length[1000]'
+            'pesan' => 'required|min_length[10]|max_length[1000]',
+            'investasi_idr' => 'required|numeric|max_length[9]'
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
@@ -94,7 +95,8 @@ class CompanyProfile extends BaseController
             'nama' => $this->request->getPost('nama'),
             'email' => $this->request->getPost('email'),
             'pesan' => $this->request->getPost('pesan'),
-            'status' => 'unread'
+            'investasi_idr' => $this->request->getPost('investasi_idr'),
+            'status' => 'unread',
         ];
 
         try {
